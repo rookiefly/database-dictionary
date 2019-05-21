@@ -1,0 +1,13 @@
+# ${dbname} 数据字典
+>   本数据字典由应用自动导出,字典的备注来自数据库表及其字段的注释(`comment`).开发者在增改库表及其字段时,请在 `migration` 时写明注释,以备后来者查阅.
+
+<#list tables as table>
+## ${table.tableName!} ${table.tableComment!}
+
+|  字段名  |  数据类型  |  默认值  |  允许非空  |  自动递增  |  备注  |
+| ------ | ------ | ------ | ------ | ------ | ------ |
+<#list table.columns as column>
+|  ${column.columnName!}  |  ${column.columnType!}  |  ${column.columnDefault!}  |  ${column.nullable!}  |  ${column.autoIncrement!}  |  ${column.columnComment!"-"}  |
+
+</#list>
+</#list>

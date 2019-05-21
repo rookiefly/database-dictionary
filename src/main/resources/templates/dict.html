@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>${dbname} 数据字典 - Powered By Markdown Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="http://s1.ystatic.cn/41345695beaa9b2e/css/github-markdown.css">
+    <script src="http://s1.ystatic.cn/lib/marked/marked.js"></script>
+    <script src="http://s1.ystatic.cn/lib/highlight.js/highlight.pack.js?v=9.6.0"></script>
+    <link href="http://s1.ystatic.cn/lib/highlight.js/styles/github.css?v=9.6.0" rel="stylesheet">
+</head>
+<body>
+<div class="markdown-body" id="content" style="margin:auto; width: 1024px;">
+
+</div>
+<div id="marked_text" style="display:none;">
+    <#include "md.html"/>
+</div>
+<script>
+    var marked_text = document.getElementById('marked_text').innerText;
+    var renderer = new marked.Renderer();
+    renderer.table = function(header, body) {
+        return '<table class="table table-bordered table-striped">\n'
+            + '<thead>\n'
+            + header
+            + '</thead>\n'
+            + '<tbody>\n'
+            + body
+            + '</tbody>\n'
+            + '</table>\n';
+    };
+    marked.setOptions({
+        renderer: renderer,
+        gfm: true,
+        tables: true,
+        breaks: false,
+        pedantic: false,
+        sanitize: true,
+        smartLists: true,
+        smartypants: false,
+        langPrefix: 'language-',
+        //这里使用了highlight对代码进行高亮显示
+        highlight: function (code) {
+            return hljs.highlightAuto(code).value;
+        }
+    });
+    document.getElementById('content').innerHTML = marked(marked_text);
+</script>
+</body>
+</html>
