@@ -25,6 +25,11 @@ public class MysqlDictController {
     @Autowired
     private Configuration cfg;
 
+    /**
+     * 下载md字典文件
+     * @param request
+     * @param response
+     */
     @GetMapping("/dict/md")
     public void downloadMarkdown(HttpServletRequest request, HttpServletResponse response) {
 
@@ -54,6 +59,19 @@ public class MysqlDictController {
         }
     }
 
+    /**
+     * html字典页面预览
+     * @param modelMap
+     * @return
+     */
+    @GetMapping("/dict/html")
+    public String liveHtml(ModelMap modelMap) {
+        ArrayList<TableDict> tables = buildTestData();
+        modelMap.addAttribute("tables", tables);
+        modelMap.addAttribute("dbname", "dict");
+        return "dict";
+    }
+
     private ArrayList<TableDict> buildTestData() {
         ArrayList<TableDict> tables = new ArrayList<>();
         TableDict table = new TableDict();
@@ -70,13 +88,4 @@ public class MysqlDictController {
         tables.add(table);
         return tables;
     }
-
-    @GetMapping("/dict/html")
-    public String liveHtml(ModelMap modelMap) {
-        ArrayList<TableDict> tables = buildTestData();
-        modelMap.addAttribute("tables", tables);
-        modelMap.addAttribute("dbname", "dict");
-        return "dict";
-    }
-
 }
