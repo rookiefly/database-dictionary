@@ -2,6 +2,7 @@ package com.rookiefly.dict.mysqldict.controller;
 
 import com.rookiefly.dict.mysqldict.model.ColumnDict;
 import com.rookiefly.dict.mysqldict.model.TableDict;
+import com.rookiefly.dict.mysqldict.service.MysqlDictService;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -25,8 +27,12 @@ public class MysqlDictController {
     @Autowired
     private Configuration cfg;
 
+    @Autowired
+    private MysqlDictService mysqlDictService;
+
     /**
      * 下载md字典文件
+     *
      * @param request
      * @param response
      */
@@ -38,9 +44,10 @@ public class MysqlDictController {
         response.setHeader("Content-Disposition", "attachment; filename=dict.md");
         FileInputStream fis = null;
         Map root = new HashMap();
-        ArrayList<TableDict> tables = buildTestData();
+        String schema = "dict";
+        List<TableDict> tables = mysqlDictService.queryMysqlDictBySchema(schema);
         root.put("tables", tables);
-        root.put("dbname", "dict");
+        root.put("schema", schema);
         try {
             Template temp = cfg.getTemplate("md.html");
             Writer out = new OutputStreamWriter(response.getOutputStream());
@@ -61,19 +68,21 @@ public class MysqlDictController {
 
     /**
      * html字典页面预览
+     *
      * @param modelMap
      * @return
      */
     @GetMapping("/dict/html")
     public String liveHtml(ModelMap modelMap) {
-        ArrayList<TableDict> tables = buildTestData();
+        String schema = "dict";
+        List<TableDict> tables = mysqlDictService.queryMysqlDictBySchema(schema);
         modelMap.addAttribute("tables", tables);
-        modelMap.addAttribute("dbname", "dict");
+        modelMap.addAttribute("schema", schema);
         return "dict";
     }
 
-    private ArrayList<TableDict> buildTestData() {
-        ArrayList<TableDict> tables = new ArrayList<>();
+    private List<TableDict> buildTestData() {
+        List<TableDict> tables = new ArrayList<>();
         TableDict table = new TableDict();
         table.setTableName("dict-type");
         table.setTableComment("字典类型");
