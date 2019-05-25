@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/3.0.1/github-markdown.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.15.6/build/highlight.min.js"></script>
+    <script type="text/javascript" src="/watermark.js"></script>
     <link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.15.6/build/styles/github.min.css" rel="stylesheet">
 </head>
 <body>
@@ -17,6 +18,7 @@
     <#include "md.html"/>
 </div>
 <script>
+    watermark.load({ watermark_txt: "rookiefly" });
     var marked_text = document.getElementById('marked_text').innerText;
     var renderer = new marked.Renderer();
     renderer.table = function(header, body) {
