@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <title>${schema} 数据字典</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/3.0.1/github-markdown.css">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.15.6/build/highlight.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/github-markdown.css">
+    <link rel="stylesheet" type="text/css" href="/github.min.css">
+    <script type="text/javascript" src="/marked.min.js"></script>
+    <script type="text/javascript" src="/highlight.min.js"></script>
     <script type="text/javascript" src="/watermark.js"></script>
-    <link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.15.6/build/styles/github.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="markdown-body" id="content" style="margin:auto; width: 1024px;">
@@ -18,6 +18,7 @@
     <#include "md.html"/>
 </div>
 <script>
+    watermark.init({ watermark_txt: "rookiefly" });
     watermark.load({ watermark_txt: "rookiefly" });
     var marked_text = document.getElementById('marked_text').innerText;
     var renderer = new marked.Renderer();
