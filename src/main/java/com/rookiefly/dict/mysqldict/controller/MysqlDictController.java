@@ -1,14 +1,20 @@
 package com.rookiefly.dict.mysqldict.controller;
 
+import com.rookiefly.dict.mysqldict.config.DynamicDataSourceContextHolder;
 import com.rookiefly.dict.mysqldict.model.ColumnDict;
 import com.rookiefly.dict.mysqldict.model.TableDict;
+import com.rookiefly.dict.mysqldict.param.DynamicDataSourceParam;
 import com.rookiefly.dict.mysqldict.service.MysqlDictService;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,15 +42,19 @@ public class MysqlDictController {
      * @param request
      * @param response
      */
-    @GetMapping("/dict/md")
-    public void downloadMarkdown(HttpServletRequest request, HttpServletResponse response) {
+    @GetMapping("/dict.md")
+    public void downloadMarkdown(@RequestParam(required = false) String schemaKey, HttpServletRequest request, HttpServletResponse response) {
 
         response.setCharacterEncoding(request.getCharacterEncoding());
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=dict.md");
         FileInputStream fis = null;
         Map root = new HashMap();
-        String schema = "dict";
+        String schema = DynamicDataSourceContextHolder.getDataSourceKey();
+        if (StringUtils.isNotBlank(schemaKey)) {
+            schema = schemaKey;
+            DynamicDataSourceContextHolder.setDataSourceKey(schemaKey);
+        }
         List<TableDict> tables = mysqlDictService.queryMysqlDictBySchema(schema);
         root.put("tables", tables);
         root.put("schema", schema);
@@ -72,9 +82,28 @@ public class MysqlDictController {
      * @param modelMap
      * @return
      */
-    @GetMapping("/dict/html")
-    public String liveHtml(ModelMap modelMap) {
-        String schema = "dict";
+    @GetMapping("/dict.html")
+    public String liveHtml(@RequestParam(required = false) String schemaKey, ModelMap modelMap) {
+        String schema = DynamicDataSourceContextHolder.getDataSourceKey();
+        if (StringUtils.isNotBlank(schemaKey)) {
+            schema = schemaKey;
+            DynamicDataSourceContextHolder.setDataSourceKey(schemaKey);
+        }
+        List<TableDict> tables = mysqlDictService.queryMysqlDictBySchema(schema);
+        modelMap.addAttribute("tables", tables);
+        modelMap.addAttribute("schema", schema);
+        return "dict";
+    }
+
+    /**
+     * html字典页面预览
+     *
+     * @param modelMap
+     * @return
+     */
+    @PostMapping("/dict.html")
+    public String liveHtmlDynamic(@RequestBody DynamicDataSourceParam dynamicDataSourceParam, ModelMap modelMap) {
+        String schema = dynamicDataSourceParam.getSchema();
         List<TableDict> tables = mysqlDictService.queryMysqlDictBySchema(schema);
         modelMap.addAttribute("tables", tables);
         modelMap.addAttribute("schema", schema);
