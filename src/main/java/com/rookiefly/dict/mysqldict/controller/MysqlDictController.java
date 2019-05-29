@@ -1,5 +1,6 @@
 package com.rookiefly.dict.mysqldict.controller;
 
+import com.rookiefly.dict.mysqldict.config.DataSourceKey;
 import com.rookiefly.dict.mysqldict.config.DynamicDataSourceContextHolder;
 import com.rookiefly.dict.mysqldict.model.ColumnDict;
 import com.rookiefly.dict.mysqldict.model.TableDict;
@@ -44,17 +45,17 @@ public class MysqlDictController {
      */
     @GetMapping("/dict.md")
     public void downloadMarkdown(@RequestParam(required = false) String schemaKey, HttpServletRequest request, HttpServletResponse response) {
-
         response.setCharacterEncoding(request.getCharacterEncoding());
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=dict.md");
         FileInputStream fis = null;
         Map root = new HashMap();
-        String schema = DynamicDataSourceContextHolder.getDataSourceKey();
         if (StringUtils.isNotBlank(schemaKey)) {
-            schema = schemaKey;
             DynamicDataSourceContextHolder.setDataSourceKey(schemaKey);
+        } else {
+            DynamicDataSourceContextHolder.setDataSourceKey(DataSourceKey.dict.name());
         }
+        String schema = DynamicDataSourceContextHolder.getDataSourceKey();
         List<TableDict> tables = mysqlDictService.queryMysqlDictBySchema(schema);
         root.put("tables", tables);
         root.put("schema", schema);
@@ -84,11 +85,12 @@ public class MysqlDictController {
      */
     @GetMapping("/dict.html")
     public String liveHtml(@RequestParam(required = false) String schemaKey, ModelMap modelMap) {
-        String schema = DynamicDataSourceContextHolder.getDataSourceKey();
         if (StringUtils.isNotBlank(schemaKey)) {
-            schema = schemaKey;
             DynamicDataSourceContextHolder.setDataSourceKey(schemaKey);
+        } else {
+            DynamicDataSourceContextHolder.setDataSourceKey(DataSourceKey.dict.name());
         }
+        String schema = DynamicDataSourceContextHolder.getDataSourceKey();
         List<TableDict> tables = mysqlDictService.queryMysqlDictBySchema(schema);
         modelMap.addAttribute("tables", tables);
         modelMap.addAttribute("schema", schema);

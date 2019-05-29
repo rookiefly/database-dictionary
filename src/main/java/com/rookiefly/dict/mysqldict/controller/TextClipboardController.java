@@ -1,5 +1,7 @@
 package com.rookiefly.dict.mysqldict.controller;
 
+import com.rookiefly.dict.mysqldict.config.DataSourceKey;
+import com.rookiefly.dict.mysqldict.config.DynamicDataSourceContextHolder;
 import com.rookiefly.dict.mysqldict.service.TextClipboardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,15 +30,17 @@ public class TextClipboardController {
     @PostMapping("/clipboard.html")
     public String saveText(@RequestParam String data) {
         logger.info("save input text: {}", data);
-        textClipboardService.saveText(data);
-        return "231d";
+        DynamicDataSourceContextHolder.setDataSourceKey(DataSourceKey.clipboard.name());
+        String hash = textClipboardService.saveText(data);
+        return hash;
     }
 
     @ResponseBody
     @GetMapping("/clipboard/{textId}")
     public String queryText(@PathVariable("textId") String textId) {
         logger.info("query text id: {}", textId);
-        textClipboardService.queryText(textId);
-        return textId;
+        DynamicDataSourceContextHolder.setDataSourceKey(DataSourceKey.clipboard.name());
+        String content = textClipboardService.queryText(textId);
+        return content;
     }
 }
