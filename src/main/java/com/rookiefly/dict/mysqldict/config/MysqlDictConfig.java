@@ -1,10 +1,12 @@
 package com.rookiefly.dict.mysqldict.config;
 
 import freemarker.template.TemplateExceptionHandler;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@EnableCaching
 public class MysqlDictConfig {
 
     @Bean("cfg")

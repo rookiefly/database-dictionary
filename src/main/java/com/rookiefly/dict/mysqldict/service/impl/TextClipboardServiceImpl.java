@@ -5,6 +5,7 @@ import com.rookiefly.dict.mysqldict.service.TextClipboardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -58,6 +59,7 @@ public class TextClipboardServiceImpl implements TextClipboardService {
     }
 
     @Override
+    @Cacheable(value = "clipboardCache", key = "targetClass + methodName + #textId")
     public String queryText(String textId) {
         long hash = Long.valueOf(textId);
         final String sql = "select content from clipboard where hash=?";
