@@ -2,6 +2,8 @@ package com.rookiefly.dict.mysqldict.controller;
 
 import com.rookiefly.dict.mysqldict.config.DataSourceKey;
 import com.rookiefly.dict.mysqldict.config.DynamicDataSourceContextHolder;
+import com.rookiefly.dict.mysqldict.config.DynamicRoutingDataSource;
+import com.rookiefly.dict.mysqldict.config.MysqlDataSourceProperties;
 import com.rookiefly.dict.mysqldict.model.ColumnDict;
 import com.rookiefly.dict.mysqldict.model.TableDict;
 import com.rookiefly.dict.mysqldict.param.DynamicDataSourceParam;
@@ -10,8 +12,10 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -36,6 +41,10 @@ public class MysqlDictController {
 
     @Autowired
     private MysqlDictService mysqlDictService;
+
+    @Autowired
+    @Qualifier("dynamicDataSource")
+    private DataSource dynamicDataSource;
 
     /**
      * 下载md字典文件
@@ -105,7 +114,19 @@ public class MysqlDictController {
      */
     @PostMapping("/dict.html")
     public String liveHtmlDynamic(@RequestBody DynamicDataSourceParam dynamicDataSourceParam, ModelMap modelMap) {
+        Assert.notNull(dynamicDataSourceParam.getSchema(), "schema is null");
         String schema = dynamicDataSourceParam.getSchema();
+        if (StringUtils.isNotBlank(schema)) {
+            DynamicDataSourceContextHolder.setDataSourceKey(schema);
+        }
+        DynamicRoutingDataSource routingDataSource = (DynamicRoutingDataSource) dynamicDataSource;
+        MysqlDataSourceProperties dataSourceConfig = new MysqlDataSourceProperties();
+        dataSourceConfig.setHost(dynamicDataSourceParam.getHost());
+        dataSourceConfig.setPort(dynamicDataSourceParam.getPort());
+        dataSourceConfig.setPassword(dynamicDataSourceParam.getPassword());
+        dataSourceConfig.setUsername(dynamicDataSourceParam.getUsername());
+        dataSourceConfig.setSchema(dynamicDataSourceParam.getSchema());
+        routingDataSource.addDataSource(dataSourceConfig);
         List<TableDict> tables = mysqlDictService.queryMysqlDictBySchema(schema);
         modelMap.addAttribute("tables", tables);
         modelMap.addAttribute("schema", schema);
