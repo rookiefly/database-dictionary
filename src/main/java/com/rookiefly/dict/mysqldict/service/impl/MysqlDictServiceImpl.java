@@ -3,6 +3,7 @@ package com.rookiefly.dict.mysqldict.service.impl;
 import com.rookiefly.dict.mysqldict.model.ColumnDict;
 import com.rookiefly.dict.mysqldict.model.TableDict;
 import com.rookiefly.dict.mysqldict.service.MysqlDictService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class MysqlDictServiceImpl implements MysqlDictService {
 
