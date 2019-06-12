@@ -37,15 +37,18 @@ public class TextClipboardServiceImpl implements TextClipboardService {
     @Override
     public String saveText(String text) {
         String encodeText = Base64Utils.encodeToUrlSafeString(text.getBytes(UTF8));
-        long hash = Hashing.md5().hashString(encodeText, UTF8).padToLong();
+        String hash = Hashing.md5().hashString(encodeText, UTF8).toString();
         String dbText = queryTextByHash(hash);
         if (dbText == null) {
-            insert(hash, encodeText);
+            long key = insert(hash, encodeText);
+            if (key > 0) {
+                return ConversionUtil.encode(key);
+            }
         }
-        return ConversionUtil.encode(hash);
+        return null;
     }
 
-    public int insert(long hash, String encodeText) {
+    public long insert(String hash, String encodeText) {
         final String insertSql = "insert into clipboard (hash, content) values(?,?)";
         //创建自增key的持有器
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -53,7 +56,7 @@ public class TextClipboardServiceImpl implements TextClipboardService {
             public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
                 // 获取PreparedStatement，并指定返回自增key
                 PreparedStatement ps = con.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
-                ps.setLong(1, hash);
+                ps.setString(1, hash);
                 Clob clob = con.createClob();
                 clob.setString(1, encodeText);
                 ps.setClob(2, clob);
@@ -64,24 +67,42 @@ public class TextClipboardServiceImpl implements TextClipboardService {
         if (insertRow > 0) {
             //getKey返回单一自增值
             log.info("auto-generated key: {}", keyHolder.getKey());
+            return keyHolder.getKey().longValue();
         }
-        return insertRow;
+        return -1L;
     }
 
     @Override
     @Cacheable(value = "clipboardCache", key = "targetClass + methodName + #textId")
     public String queryText(String textId) {
-        long hash = ConversionUtil.decode(textId);
-        String encodeText = queryTextByHash(hash);
+        long id = ConversionUtil.decode(textId);
+        String encodeText = queryTextById(id);
         if (StringUtils.isNotBlank(encodeText)) {
             return new String(Base64Utils.decodeFromUrlSafeString(encodeText));
         }
         return null;
     }
 
-    public String queryTextByHash(long hash) {
+    public String queryTextByHash(String hash) {
         final String sql = "select content from clipboard where hash=?";
         List<String> result = jdbcTemplate.query(sql, new Object[]{hash}, new RowMapper<String>() {
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                if (rs != null) {
+                    return rs.getString(1);
+                }
+                return null;
+            }
+        });
+        if (CollectionUtils.isNotEmpty(result)) {
+            return result.get(0);
+        }
+        return null;
+    }
+
+    public String queryTextById(long id) {
+        final String sql = "select content from clipboard where id=?";
+        List<String> result = jdbcTemplate.query(sql, new Object[]{id}, new RowMapper<String>() {
             @Override
             public String mapRow(ResultSet rs, int rowNum) throws SQLException {
                 if (rs != null) {
