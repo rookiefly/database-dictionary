@@ -1,0 +1,132 @@
+package com.rookiefly.open.dictionary.controller;
+
+import com.rookiefly.open.dictionary.database.DBMetadataHolder;
+import com.rookiefly.open.dictionary.database.DefaultDataSource;
+import com.rookiefly.open.dictionary.database.Dialect;
+import com.rookiefly.open.dictionary.database.IntrospectedTable;
+import com.rookiefly.open.dictionary.param.DataSourceParam;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Slf4j
+@Controller
+public class DatabaseDictionaryController {
+
+    @Autowired
+    private Configuration cfg;
+
+    /**
+     * 下载md字典文件
+     *
+     * @param dataSourceParam
+     */
+    @GetMapping("/dictionary.md")
+    public void downloadMarkdown(@RequestBody DataSourceParam dataSourceParam, HttpServletRequest request, HttpServletResponse response) {
+        response.setCharacterEncoding(request.getCharacterEncoding());
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=dictionary.md");
+        FileInputStream fis = null;
+        Map root = new HashMap();
+        String schema = dataSourceParam.getSchema();
+        root.put("tables", null);
+        root.put("schema", schema);
+        try {
+            Template temp = cfg.getTemplate("md.html");
+            Writer out = new OutputStreamWriter(response.getOutputStream());
+            temp.process(root, out);
+            response.flushBuffer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * html字典页面预览
+     *
+     * @param dataSourceParam
+     * @return
+     */
+    @PostMapping("/dictionary.html")
+    public String liveHtml(@RequestBody DataSourceParam dataSourceParam, ModelMap modelMap) throws SQLException {
+        String schema = dataSourceParam.getSchema();
+        DefaultDataSource dataSource = new DefaultDataSource(
+                Dialect.MYSQL,
+                dataSourceParam.getUrl(),
+                dataSourceParam.getUsername(),
+                dataSourceParam.getPassword()
+        );
+        DBMetadataHolder dbMetadataHolder = new DBMetadataHolder(dataSource);
+        List<IntrospectedTable> introspectedTableList = dbMetadataHolder.introspectTables(dbMetadataHolder.getDefaultConfig());
+        modelMap.addAttribute("tables", introspectedTableList);
+        modelMap.addAttribute("schema", schema);
+        return "dictionary";
+    }
+
+    /**
+     * html字典页面预览
+     *
+     * @param dataSourceParam
+     * @return
+     */
+    @GetMapping("/dictionary.json")
+    @ResponseBody
+    public List<IntrospectedTable> liveJson(@RequestBody DataSourceParam dataSourceParam) throws SQLException {
+        String schema = dataSourceParam.getSchema();
+        DefaultDataSource dataSource = new DefaultDataSource(
+                Dialect.MYSQL,
+                dataSourceParam.getUrl(),
+                dataSourceParam.getUsername(),
+                dataSourceParam.getPassword()
+        );
+
+        DBMetadataHolder dbMetadataHolder = new DBMetadataHolder(dataSource);
+        List<IntrospectedTable> introspectedTableList = dbMetadataHolder.introspectTables(dbMetadataHolder.getDefaultConfig());
+        return introspectedTableList;
+    }
+
+    /**
+     * html字典页面预览测试
+     */
+    @GetMapping("/test.html")
+    public String liveHtmlTest(ModelMap modelMap) throws SQLException {
+        DefaultDataSource dataSource = new DefaultDataSource(
+                Dialect.MYSQL,
+                "jdbc:mysql://localhost:3306/test",
+                "root",
+                "123456"
+        );
+
+        DBMetadataHolder dbMetadataHolder = new DBMetadataHolder(dataSource);
+        List<IntrospectedTable> introspectedTableList = dbMetadataHolder.introspectTables(dbMetadataHolder.getDefaultConfig());
+        modelMap.addAttribute("tables", introspectedTableList);
+        modelMap.addAttribute("schema", "test");
+        return "dictionary";
+    }
+}
