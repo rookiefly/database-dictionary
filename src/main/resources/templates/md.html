@@ -1,5 +1,5 @@
 # ${schema} 数据字典
->   本数据字典由应用自动导出,字典的备注来自数据库表及其字段的注释(`comment`).开发者在增改库表及其字段时,请在 `migration` 时写明注释,以备后来者查阅.
+>   本数据字典由应用自动导出，字典的备注来自数据库表及其字段的注释(`comment`)。
 
 <#list tables as table>
 ## ${table.name!} ${table.remarks!}
@@ -9,4 +9,5 @@
 <#list table.baseColumns as column>
 |  ${column.name!}  |  ${column.type!}  |  ${column.defaultValue!}  |  ${column.nullable?string('yes', 'no')}  |  ${column.pk?string('yes', 'no')}  |  ${((column.remarks)?length>0)?string((column.remarks),"-")}  |
 </#list>
+
 </#list>

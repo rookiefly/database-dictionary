@@ -1,12 +1,14 @@
 package com.rookiefly.open.dictionary.controller;
 
 import com.rookiefly.open.dictionary.database.DBMetadataHolder;
+import com.rookiefly.open.dictionary.database.DatabaseConfig;
 import com.rookiefly.open.dictionary.database.DefaultDataSource;
 import com.rookiefly.open.dictionary.database.Dialect;
 import com.rookiefly.open.dictionary.database.IntrospectedTable;
 import com.rookiefly.open.dictionary.param.DataSourceParam;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -40,31 +41,27 @@ public class DatabaseDictionaryController {
      * @param dataSourceParam
      */
     @GetMapping("/dictionary.md")
-    public void downloadMarkdown(@RequestBody DataSourceParam dataSourceParam, HttpServletRequest request, HttpServletResponse response) {
+    public void downloadMarkdown(@RequestBody DataSourceParam dataSourceParam, HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, TemplateException {
         response.setCharacterEncoding(request.getCharacterEncoding());
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=dictionary.md");
-        FileInputStream fis = null;
+        DefaultDataSource dataSource = new DefaultDataSource(
+                Dialect.valueOf(dataSourceParam.getDialect()),
+                dataSourceParam.getUrl(),
+                dataSourceParam.getUsername(),
+                dataSourceParam.getPassword()
+        );
+
+        DBMetadataHolder dbMetadataHolder = new DBMetadataHolder(dataSource);
+        DatabaseConfig databaseConfig = dbMetadataHolder.getDefaultConfig();
+        List<IntrospectedTable> introspectedTableList = dbMetadataHolder.introspectTables(databaseConfig);
         Map root = new HashMap();
-        String schema = dataSourceParam.getSchema();
-        root.put("tables", null);
-        root.put("schema", schema);
-        try {
-            Template temp = cfg.getTemplate("md.html");
-            Writer out = new OutputStreamWriter(response.getOutputStream());
-            temp.process(root, out);
-            response.flushBuffer();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        root.put("tables", introspectedTableList);
+        root.put("schema", databaseConfig.getCatalog());
+        Template temp = cfg.getTemplate("md.html");
+        Writer out = new OutputStreamWriter(response.getOutputStream());
+        temp.process(root, out);
+        response.flushBuffer();
     }
 
     /**
@@ -75,17 +72,17 @@ public class DatabaseDictionaryController {
      */
     @PostMapping("/dictionary.html")
     public String liveHtml(@RequestBody DataSourceParam dataSourceParam, ModelMap modelMap) throws SQLException {
-        String schema = dataSourceParam.getSchema();
         DefaultDataSource dataSource = new DefaultDataSource(
-                Dialect.MYSQL,
+                Dialect.valueOf(dataSourceParam.getDialect()),
                 dataSourceParam.getUrl(),
                 dataSourceParam.getUsername(),
                 dataSourceParam.getPassword()
         );
         DBMetadataHolder dbMetadataHolder = new DBMetadataHolder(dataSource);
-        List<IntrospectedTable> introspectedTableList = dbMetadataHolder.introspectTables(dbMetadataHolder.getDefaultConfig());
+        DatabaseConfig databaseConfig = dbMetadataHolder.getDefaultConfig();
+        List<IntrospectedTable> introspectedTableList = dbMetadataHolder.introspectTables(databaseConfig);
         modelMap.addAttribute("tables", introspectedTableList);
-        modelMap.addAttribute("schema", schema);
+        modelMap.addAttribute("schema", databaseConfig.getCatalog());
         return "dictionary";
     }
 
@@ -98,9 +95,8 @@ public class DatabaseDictionaryController {
     @GetMapping("/dictionary.json")
     @ResponseBody
     public List<IntrospectedTable> liveJson(@RequestBody DataSourceParam dataSourceParam) throws SQLException {
-        String schema = dataSourceParam.getSchema();
         DefaultDataSource dataSource = new DefaultDataSource(
-                Dialect.MYSQL,
+                Dialect.valueOf(dataSourceParam.getDialect()),
                 dataSourceParam.getUrl(),
                 dataSourceParam.getUsername(),
                 dataSourceParam.getPassword()
@@ -118,15 +114,16 @@ public class DatabaseDictionaryController {
     public String liveHtmlTest(ModelMap modelMap) throws SQLException {
         DefaultDataSource dataSource = new DefaultDataSource(
                 Dialect.MYSQL,
-                "jdbc:mysql://localhost:3306/test",
+                "jdbc:mysql://localhost:3306/torna",
                 "root",
                 "123456"
         );
 
         DBMetadataHolder dbMetadataHolder = new DBMetadataHolder(dataSource);
-        List<IntrospectedTable> introspectedTableList = dbMetadataHolder.introspectTables(dbMetadataHolder.getDefaultConfig());
+        DatabaseConfig databaseConfig = dbMetadataHolder.getDefaultConfig();
+        List<IntrospectedTable> introspectedTableList = dbMetadataHolder.introspectTables(databaseConfig);
         modelMap.addAttribute("tables", introspectedTableList);
-        modelMap.addAttribute("schema", "test");
+        modelMap.addAttribute("schema", databaseConfig.getCatalog());
         return "dictionary";
     }
 }

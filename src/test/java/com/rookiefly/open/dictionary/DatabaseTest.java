@@ -9,21 +9,17 @@ import com.rookiefly.open.dictionary.database.IntrospectedTable;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- * @author liuzh
- */
 public class DatabaseTest {
 
     public static void main(String[] args) {
         DefaultDataSource dataSource = new DefaultDataSource(
-                Dialect.MYSQL,
-                "jdbc:mysql://localhost:3306/test",
+                Dialect.valueOf("MYSQL"),
+                "jdbc:mysql://localhost:3306/torna",
                 "root",
                 "123456"
         );
-        DBMetadataHolder dbMetadataHolder = null;
         try {
-            dbMetadataHolder = new DBMetadataHolder(dataSource);
+            DBMetadataHolder dbMetadataHolder = new DBMetadataHolder(dataSource);
 
             List<IntrospectedTable> list = dbMetadataHolder.introspectTables(dbMetadataHolder.getDefaultConfig());
 
