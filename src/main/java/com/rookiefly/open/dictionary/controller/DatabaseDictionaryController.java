@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,7 +42,7 @@ public class DatabaseDictionaryController {
      * @param dataSourceParam
      */
     @GetMapping("/dictionary.md")
-    public void downloadMarkdown(@RequestBody DataSourceParam dataSourceParam, HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, TemplateException {
+    public void downloadMarkdown(@RequestBody @Validated DataSourceParam dataSourceParam, HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, TemplateException {
         response.setCharacterEncoding(request.getCharacterEncoding());
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=dictionary.md");
@@ -71,7 +72,7 @@ public class DatabaseDictionaryController {
      * @return
      */
     @PostMapping("/dictionary.html")
-    public String liveHtml(@RequestBody DataSourceParam dataSourceParam, ModelMap modelMap) throws SQLException {
+    public String liveHtml(@RequestBody @Validated DataSourceParam dataSourceParam, ModelMap modelMap) throws SQLException {
         DefaultDataSource dataSource = new DefaultDataSource(
                 Dialect.valueOf(dataSourceParam.getDialect()),
                 dataSourceParam.getUrl(),
@@ -94,7 +95,7 @@ public class DatabaseDictionaryController {
      */
     @GetMapping("/dictionary.json")
     @ResponseBody
-    public List<IntrospectedTable> liveJson(@RequestBody DataSourceParam dataSourceParam) throws SQLException {
+    public List<IntrospectedTable> liveJson(@RequestBody @Validated DataSourceParam dataSourceParam) throws SQLException {
         DefaultDataSource dataSource = new DefaultDataSource(
                 Dialect.valueOf(dataSourceParam.getDialect()),
                 dataSourceParam.getUrl(),
