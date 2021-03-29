@@ -115,7 +115,7 @@ public class DatabaseDictionaryController {
     public String liveHtmlTest(ModelMap modelMap) throws SQLException {
         DefaultDataSource dataSource = new DefaultDataSource(
                 Dialect.MYSQL,
-                "jdbc:mysql://localhost:3306/torna",
+                "jdbc:mysql://localhost:3306/test",
                 "root",
                 "123456"
         );
