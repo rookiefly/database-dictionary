@@ -1,16 +1,16 @@
 package com.rookiefly.open.dictionary.service;
 
-import com.rookiefly.open.dictionary.bo.DbHistoryConnectionBO;
+import com.rookiefly.open.dictionary.bo.DatabaseConnectionHistoryBO;
 
 import java.util.List;
 
 public interface DatabaseConnectionService {
 
-    Integer saveDatabaseConnection(DbHistoryConnectionBO dataSourceParam);
+    Integer saveDatabaseConnection(DatabaseConnectionHistoryBO dataSourceParam);
 
     Integer deleteDatabaseConnection(String aliasName);
 
-    DbHistoryConnectionBO queryDatabaseConnection(String aliasName);
+    DatabaseConnectionHistoryBO queryDatabaseConnection(String aliasName);
 
-    List<DbHistoryConnectionBO> listDatabaseConnection();
+    List<DatabaseConnectionHistoryBO> listDatabaseConnection();
 }

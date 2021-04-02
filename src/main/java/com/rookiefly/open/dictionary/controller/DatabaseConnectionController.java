@@ -1,6 +1,6 @@
 package com.rookiefly.open.dictionary.controller;
 
-import com.rookiefly.open.dictionary.bo.DbHistoryConnectionBO;
+import com.rookiefly.open.dictionary.bo.DatabaseConnectionHistoryBO;
 import com.rookiefly.open.dictionary.common.CommonResponse;
 import com.rookiefly.open.dictionary.database.DefaultDataSource;
 import com.rookiefly.open.dictionary.database.Dialect;
@@ -8,6 +8,7 @@ import com.rookiefly.open.dictionary.exception.BizErrorCodeEnum;
 import com.rookiefly.open.dictionary.param.DataSourceParam;
 import com.rookiefly.open.dictionary.service.DatabaseConnectionService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,13 +71,20 @@ public class DatabaseConnectionController {
      */
     @PutMapping("/connection")
     public CommonResponse saveDatabaseConnection(@RequestBody @Validated DataSourceParam dataSourceParam) {
-        DbHistoryConnectionBO dbHistoryConnectionBO = new DbHistoryConnectionBO();
-        dbHistoryConnectionBO.setDialect(Dialect.valueOf(dataSourceParam.getDialect()));
-        dbHistoryConnectionBO.setUrl(dataSourceParam.getUrl());
-        dbHistoryConnectionBO.setUser(dataSourceParam.getUser());
-        dbHistoryConnectionBO.setPassword(dataSourceParam.getPassword());
-        dbHistoryConnectionBO.setAliasName(dataSourceParam.getAliasName());
-        return CommonResponse.newSuccessResponse(databaseConnectionService.saveDatabaseConnection(dbHistoryConnectionBO));
+        String aliasName = dataSourceParam.getAliasName();
+        String user = dataSourceParam.getUser();
+        String url = dataSourceParam.getUrl();
+        String dialect = dataSourceParam.getDialect();
+        if (StringUtils.isBlank(aliasName)) {
+            aliasName = dialect + "-" + url + "@" + user;
+        }
+        DatabaseConnectionHistoryBO databaseConnectionHistoryBO = new DatabaseConnectionHistoryBO();
+        databaseConnectionHistoryBO.setDialect(Dialect.valueOf(dialect));
+        databaseConnectionHistoryBO.setUrl(url);
+        databaseConnectionHistoryBO.setUser(user);
+        databaseConnectionHistoryBO.setPassword(dataSourceParam.getPassword());
+        databaseConnectionHistoryBO.setAliasName(aliasName);
+        return CommonResponse.newSuccessResponse(databaseConnectionService.saveDatabaseConnection(databaseConnectionHistoryBO));
     }
 
     /**

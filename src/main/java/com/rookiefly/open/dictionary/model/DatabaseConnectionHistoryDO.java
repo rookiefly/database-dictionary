@@ -10,7 +10,9 @@ import java.util.Date;
  * @author rookiefly
  */
 @Data
-public class DbHistoryConnectionDO {
+public class DatabaseConnectionHistoryDO {
+
+    private Long id;
 
     private String dialect;
 

@@ -20,3 +20,8 @@ spring:
     static-path-pattern: /**
   profiles:
     active: dev
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  type-aliases-package: com.rookiefly.open.dictionary.model
+  configuration:
+    map-underscore-to-camel-case: true

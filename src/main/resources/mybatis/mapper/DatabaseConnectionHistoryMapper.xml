@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rookiefly.open.dictionary.mapper.DatabaseConnectionHistoryMapper">
+
+    <insert id="saveDatabaseConnectionHistory" useGeneratedKeys="true" keyProperty="id" keyColumn="id"
+            parameterType="com.rookiefly.open.dictionary.model.DatabaseConnectionHistoryDO">
+        INSERT INTO database_connection_history
+        <trim prefix="(" suffixOverrides="," suffix=")">
+            <if test="dialect != null">dialect,</if>
+            <if test="aliasName != null">alias_name,</if>
+            <if test="url != null">url,</if>
+            <if test="user != null">user,</if>
+            <if test="password != null">password,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="VALUES (" suffixOverrides="," suffix=")">
+            <if test="dialect != null">#{dialect},</if>
+            <if test="aliasName != null">#{aliasName},</if>
+            <if test="url != null">#{url},</if>
+            <if test="user != null">#{user},</if>
+            <if test="password != null">#{password},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteDatabaseConnectionHistory">
+        DELETE
+        FROM database_connection_history
+        WHERE alias_name = #{aliasName}
+    </delete>
+
+    <select id="listDatabaseConnectionHistory"
+            resultType="com.rookiefly.open.dictionary.model.DatabaseConnectionHistoryDO">
+        SELECT *
+        FROM database_connection_history
+    </select>
+
+</mapper>

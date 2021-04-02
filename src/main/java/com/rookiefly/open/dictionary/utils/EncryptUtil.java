@@ -1,11 +1,10 @@
 package com.rookiefly.open.dictionary.utils;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.Security;
 
@@ -18,7 +17,7 @@ public class EncryptUtil {
 
     static {
         Security.addProvider(new com.sun.crypto.provider.SunJCE());
-        DES_KEY = new SecretKeySpec(RandomStringUtils.random(16).getBytes(StandardCharsets.UTF_8), "DES");
+        DES_KEY = new SecretKeySpec(RandomUtils.nextBytes(8), "DES");
     }
 
     private static Cipher getCipher() {

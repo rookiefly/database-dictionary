@@ -8,7 +8,7 @@ import lombok.Data;
  * @author rookiefly
  */
 @Data
-public class DbHistoryConnection {
+public class DatabaseConnectionHistory {
 
     private String dialect;
 
