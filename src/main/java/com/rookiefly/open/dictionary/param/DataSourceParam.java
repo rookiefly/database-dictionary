@@ -29,7 +29,7 @@ public class DataSourceParam implements Serializable {
      * 用户名
      */
     @NotBlank(message = "数据库用户名不能为空")
-    private String username;
+    private String user;
 
     /**
      * 密码
@@ -37,9 +37,5 @@ public class DataSourceParam implements Serializable {
     @NotBlank(message = "数据库密码不能为空")
     private String password;
 
-    private String host;
-
-    private String port;
-
-    private String schema;
+    private String aliasName;
 }

@@ -1,7 +1,10 @@
 package com.rookiefly.open.dictionary.database;
 
+import lombok.ToString;
+
 import java.sql.Types;
 
+@ToString
 public class IntrospectedColumn extends IntrospectedBase {
 
     protected int jdbcType;
@@ -22,11 +25,11 @@ public class IntrospectedColumn extends IntrospectedBase {
 
     protected boolean isColumnNameDelimited;
 
-    protected IntrospectedTable introspectedTable;
-
     private String type;
 
     protected String defaultValue;
+
+    protected String tableName;
 
     public IntrospectedColumn() {
         super();
@@ -62,25 +65,6 @@ public class IntrospectedColumn extends IntrospectedBase {
 
     public void setScale(int scale) {
         this.scale = scale;
-    }
-
-    @Override
-    public String toString() {
-        return "IntrospectedColumn{" +
-                "name='" + name + '\'' +
-                ", jdbcType=" + jdbcType +
-                ", jdbcTypeName='" + jdbcTypeName + '\'' +
-                ", nullable=" + nullable +
-                ", length=" + length +
-                ", scale=" + scale +
-                ", javaProperty='" + javaProperty + '\'' +
-                ", fullyQualifiedJavaType=" + fullyQualifiedJavaType +
-                ", isColumnNameDelimited=" + isColumnNameDelimited +
-                ", introspectedTable=" + introspectedTable +
-                ", remarks='" + remarks + '\'' +
-                ", type='" + type + '\'' +
-                ", defaultValue='" + defaultValue + '\'' +
-                '}';
     }
 
     public boolean isBLOBColumn() {
@@ -153,14 +137,6 @@ public class IntrospectedColumn extends IntrospectedBase {
         this.fullyQualifiedJavaType = fullyQualifiedJavaType;
     }
 
-    public IntrospectedTable getIntrospectedTable() {
-        return introspectedTable;
-    }
-
-    public void setIntrospectedTable(IntrospectedTable introspectedTable) {
-        this.introspectedTable = introspectedTable;
-    }
-
     public String getDefaultValue() {
         return defaultValue;
     }
@@ -178,7 +154,11 @@ public class IntrospectedColumn extends IntrospectedBase {
     }
 
     public String getTableName() {
-        return getIntrospectedTable().getName();
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
     public boolean isPk() {

@@ -1,5 +1,7 @@
 package com.rookiefly.open.dictionary.database;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -7,8 +9,12 @@ import java.util.List;
 public class IntrospectedTable extends IntrospectedBase {
 
     private String schema;
+
     private String catalog;
+
+    @JsonIgnore
     protected List<IntrospectedColumn> primaryKeyColumns;
+
     protected List<IntrospectedColumn> baseColumns;
 
     public IntrospectedTable() {
@@ -97,7 +103,7 @@ public class IntrospectedTable extends IntrospectedBase {
 
     public void addColumn(IntrospectedColumn introspectedColumn) {
         baseColumns.add(introspectedColumn);
-        introspectedColumn.setIntrospectedTable(this);
+        introspectedColumn.setTableName(name);
     }
 
     public void addPrimaryKeyColumn(String columnName) {

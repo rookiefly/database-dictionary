@@ -174,7 +174,7 @@ public class DBMetadataHolder {
                 return true;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            return false;
         } finally {
             closeConnection();
         }
@@ -185,12 +185,8 @@ public class DBMetadataHolder {
         if (connection != null && !connection.isClosed()) {
             return connection;
         }
-        try {
-            connection = dataSource.getConnection();
-            return connection;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        connection = dataSource.getConnection();
+        return connection;
     }
 
     public Dialect getDialect() {

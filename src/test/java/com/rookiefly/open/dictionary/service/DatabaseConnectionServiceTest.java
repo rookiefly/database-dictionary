@@ -8,10 +8,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class DatabaseDictionaryServiceTest {
+public class DatabaseConnectionServiceTest {
 
     @Autowired
-    private DatabaseDictionaryService databaseDictionaryService;
+    private DatabaseConnectionService databaseConnectionService;
 
     @Test
     public void testShowTables() {

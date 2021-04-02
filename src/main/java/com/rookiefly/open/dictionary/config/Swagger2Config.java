@@ -9,28 +9,28 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 
 @Configuration
-@EnableSwagger2
+@EnableSwagger2WebMvc
 public class Swagger2Config {
 
     @Bean
-    public Docket createRestApi() {
+    public Docket defaultApiDoc() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .enable(true)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.rookiefly.dict.mysqldict.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.rookiefly.open.dictionary.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("mysql数据字典接口文档")
-                .description("mysql数据字典接口文档")
-                .termsOfServiceUrl("https://github.com/rookiefly/r")
+                .title("数据库字典服务接口文档")
+                .description("数据库字典服务接口文档")
+                .termsOfServiceUrl("https://github.com/rookiefly/database-dictionary")
                 .contact(new Contact("rookiefly", "https://github.com/rookiefly/", "rookiefly@163.com"))
                 .version("1.0.0-SNAPSHOT")
                 .build();

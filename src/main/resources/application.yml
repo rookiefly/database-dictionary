@@ -1,0 +1,22 @@
+logging:
+  level:
+    org.springframework.jdbc.core.JdbcTemplate: DEBUG
+    root: info
+server:
+  port: 8080
+spring:
+  application:
+    name: database-dictionary
+  cache:
+    cache-names: dictCache
+    caffeine:
+      spec: maximumSize=500,expireAfterAccess=600s
+  freemarker:
+    cache: false
+    charset: UTF-8
+    suffix: .html
+    template-loader-path: classpath:/templates/
+  mvc:
+    static-path-pattern: /**
+  profiles:
+    active: dev
