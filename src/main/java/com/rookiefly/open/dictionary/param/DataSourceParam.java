@@ -20,9 +20,18 @@ public class DataSourceParam implements Serializable {
     private String dialect;
 
     /**
+     * 主机名
+     */
+    private String host;
+
+    /**
+     * 端口号
+     */
+    private String port;
+
+    /**
      * jdbc url
      */
-    @NotBlank(message = "数据库JDBC连接字符串不能为空")
     private String url;
 
     /**
@@ -37,5 +46,14 @@ public class DataSourceParam implements Serializable {
     @NotBlank(message = "数据库密码不能为空")
     private String password;
 
+    /**
+     * 连接别名
+     */
     private String aliasName;
+
+    /**
+     * 数据库名称
+     */
+    @NotBlank(message = "数据库名称不能为空")
+    private String schema;
 }

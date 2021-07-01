@@ -1,11 +1,15 @@
 package com.rookiefly.open.dictionary.database;
 
+import org.apache.commons.text.StringSubstitutor;
+
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -22,6 +26,24 @@ public final class DefaultDataSource implements DataSource {
     public DefaultDataSource(Dialect dialect, DataSource dataSource) {
         this.dialect = dialect;
         this.delegate = dataSource;
+        try {
+            Class.forName(dialect.getDriverClass());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("找不到指定的数据库驱动:" + dialect.getDriverClass());
+        }
+    }
+
+    public DefaultDataSource(Dialect dialect, String host, String port, String schema, String user, String password) {
+        this.dialect = dialect;
+        this.user = user;
+        this.password = password;
+        this.delegate = this;
+        Map<String, String> params = new HashMap<>();
+        params.put("host", host);
+        params.put("port", port);
+        params.put("schema", schema);
+        this.url = StringSubstitutor.replace(dialect.getTemplate(), params);
+
         try {
             Class.forName(dialect.getDriverClass());
         } catch (ClassNotFoundException e) {

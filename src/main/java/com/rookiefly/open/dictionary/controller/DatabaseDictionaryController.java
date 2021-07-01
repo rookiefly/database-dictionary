@@ -45,8 +45,8 @@ public class DatabaseDictionaryController {
      *
      * @param dataSourceParam
      */
-    @GetMapping("/dictionary.md")
-    public void dictionaryMarkdown(@RequestBody @Validated DataSourceParam dataSourceParam, HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, TemplateException {
+    @GetMapping("/export/dictionary.md")
+    public void exportDictionaryMarkdown(@Validated DataSourceParam dataSourceParam, HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, TemplateException {
         response.setCharacterEncoding(request.getCharacterEncoding());
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=dictionary.md");
@@ -75,11 +75,13 @@ public class DatabaseDictionaryController {
      * @param dataSourceParam
      * @return
      */
-    @PostMapping("/dictionary.html")
-    public String dictionaryHtml(@RequestBody @Validated DataSourceParam dataSourceParam, ModelMap modelMap) throws SQLException {
+    @GetMapping("/view/dictionary.html")
+    public String viewDictionaryHtml(@Validated DataSourceParam dataSourceParam, ModelMap modelMap) throws SQLException {
         DefaultDataSource dataSource = new DefaultDataSource(
-                Dialect.valueOf(dataSourceParam.getDialect()),
-                dataSourceParam.getUrl(),
+                Dialect.valueOf(dataSourceParam.getDialect().toUpperCase()),
+                dataSourceParam.getHost(),
+                dataSourceParam.getPort(),
+                dataSourceParam.getSchema(),
                 dataSourceParam.getUser(),
                 dataSourceParam.getPassword()
         );
@@ -97,7 +99,7 @@ public class DatabaseDictionaryController {
      * @param dataSourceParam
      * @return
      */
-    @PostMapping("/dictionary.json")
+    @PostMapping("/data/dictionary.json")
     @ResponseBody
     public CommonResponse dictionaryJson(@RequestBody @Validated DataSourceParam dataSourceParam) throws SQLException {
         DefaultDataSource dataSource = new DefaultDataSource(
@@ -110,25 +112,5 @@ public class DatabaseDictionaryController {
         DBMetadataHolder dbMetadataHolder = new DBMetadataHolder(dataSource);
         List<IntrospectedTable> introspectedTableList = dbMetadataHolder.introspectTables(dbMetadataHolder.getDefaultConfig());
         return CommonResponse.newSuccessResponse(introspectedTableList);
-    }
-
-    /**
-     * html字典页面预览测试
-     */
-    @GetMapping("/test.html")
-    public String dictionaryHtmlTest(ModelMap modelMap) throws SQLException {
-        DefaultDataSource dataSource = new DefaultDataSource(
-                Dialect.MYSQL,
-                "jdbc:mysql://localhost:3306/test",
-                "root",
-                "123456"
-        );
-
-        DBMetadataHolder dbMetadataHolder = new DBMetadataHolder(dataSource);
-        DatabaseConfig databaseConfig = dbMetadataHolder.getDefaultConfig();
-        List<IntrospectedTable> introspectedTableList = dbMetadataHolder.introspectTables(databaseConfig);
-        modelMap.addAttribute("tables", introspectedTableList);
-        modelMap.addAttribute("schema", databaseConfig.getCatalog());
-        return "dictionary";
     }
 }
