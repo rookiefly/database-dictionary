@@ -163,7 +163,7 @@ public class FullyQualifiedJavaType implements
     }
 
     public List<String> getImportList() {
-        List<String> answer = new ArrayList<String>();
+        List<String> answer = new ArrayList<>();
         if (isExplicitlyImported()) {
             int index = baseShortName.indexOf('.');
             if (index == -1) {
@@ -174,7 +174,7 @@ public class FullyQualifiedJavaType implements
                 StringBuilder sb = new StringBuilder();
                 sb.append(packageName);
                 sb.append('.');
-                sb.append(baseShortName.substring(0, index));
+                sb.append(baseShortName, 0, index);
                 answer.add(sb.toString());
             }
         }

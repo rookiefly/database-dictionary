@@ -35,11 +35,11 @@ public class IntrospectedBase {
                 }
             } else {
                 if (caseSensitive) {
-                    if (getName().indexOf(searchText) == -1) {
+                    if (!getName().contains(searchText)) {
                         return false;
                     }
                 } else {
-                    if (getName().toUpperCase().indexOf(searchText.toUpperCase()) == -1) {
+                    if (!getName().toUpperCase().contains(searchText.toUpperCase())) {
                         return false;
                     }
                 }
@@ -58,11 +58,11 @@ public class IntrospectedBase {
                 }
             } else {
                 if (caseSensitive) {
-                    if (getRemarks() == null || getRemarks().indexOf(searchComment) == -1) {
+                    if (getRemarks() == null || !getRemarks().contains(searchComment)) {
                         return false;
                     }
                 } else {
-                    if (getRemarks() == null || getRemarks().indexOf(searchComment) == -1) {
+                    if (getRemarks() == null || !getRemarks().contains(searchComment)) {
                         return false;
                     }
                 }

@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -141,19 +142,13 @@ public class DBMetadataHolder {
 
     public static void sortTables(List<IntrospectedTable> tables) {
         if (CollectionUtils.isNotEmpty(tables)) {
-            Collections.sort(tables, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+            Collections.sort(tables, Comparator.comparing(IntrospectedBase::getName));
         }
     }
 
     public static void sortColumns(List<IntrospectedColumn> columns) {
         if (CollectionUtils.isNotEmpty(columns)) {
-            Collections.sort(columns, (o1, o2) -> {
-                int result = o1.getTableName().compareTo(o2.getTableName());
-                if (result == 0) {
-                    result = o1.getName().compareTo(o2.getName());
-                }
-                return result;
-            });
+            Collections.sort(columns, Comparator.comparing(IntrospectedColumn::getTableName).thenComparing(IntrospectedBase::getName));
         }
     }
 
