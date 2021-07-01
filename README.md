@@ -1,13 +1,17 @@
-# 数据库数据字典生成工具，支持多种数据库（Mysql、Oracle、PostgreSQL等）。
+# 数据库表结构字典生成工具，支持多种数据库（Mysql、Oracle、Microsoft SQL Server、PostgreSQL等）。
 
-> 本数据字典由应用自动导出（markdown）和在线预览，字典的备注来自数据库表及其字段的注释。开发者在增改库表及其字段时，请在 `migration` 时写明注释，以备后来者查阅。
+> 本数据字典由应用自动导出（markdown）和在线预览，备注信息来自数据库表及其字段的注释。
 
 ## 导出预览
 
-支持生成 `markdown` 和 `html` 两种格式。
+ 目前暂时支持 `markdown`格式文件下载和在线`html`预览。
 
 页面预览：
 
-![dict.png][1]
+![index.png][1]
 
-  [1]: snapshot.png
+![dict.png][2]
+
+  [1]: index.png
+  [2]: snapshot.png
+  
