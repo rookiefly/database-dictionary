@@ -95,7 +95,7 @@
                     </el-row>
                     <el-row style="margin-bottom: 20px;">
                         <el-col :span="20">
-                            <el-input v-model="o_dataname" clearable>
+                            <el-input v-model="o_schema" clearable>
                                 <template slot="prepend">数据库</template>
                             </el-input>
                         </el-col>
@@ -154,7 +154,7 @@
                     </el-row>
                     <el-row style="margin-bottom: 20px;">
                         <el-col :span="20">
-                            <el-input v-model="m_dataname" clearable>
+                            <el-input v-model="m_schema" clearable>
                                 <template slot="prepend">数据库</template>
                             </el-input>
                         </el-col>
@@ -212,7 +212,7 @@
                     </el-row>
                     <el-row style="margin-bottom: 20px;">
                         <el-col :span="20">
-                            <el-input v-model="s_dataname" clearable>
+                            <el-input v-model="s_schema" clearable>
                                 <template slot="prepend">数据库</template>
                             </el-input>
                         </el-col>
@@ -235,7 +235,7 @@
                         <el-popover placement="top" width="350" v-model="sqlserverPopoverVisible">
                             <el-row>
                                 <el-button class="el-icon-download" type="primary" plain
-                                           @click="generateWord('sqlserver','markdown')">word
+                                           @click="generateWord('sqlserver','markdown')">markdown
                                 </el-button>
                                 <el-button class="el-icon-download" type="primary" plain
                                            @click="generateWord('sqlserver','word')">word

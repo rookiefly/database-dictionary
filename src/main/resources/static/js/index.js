@@ -8,19 +8,19 @@ var vue = new Vue({
         iconNotes: "数据库表结构字典工具",
         o_ip: '',
         o_port: "1521",
-        o_dataname: "orcl",
+        o_schema: "orcl",
         o_username: "",
         o_password: "",
         o_filepath: "D://",
         m_ip: '',
         m_port: "3306",
-        m_dataname: "",
+        m_schema: "",
         m_username: "",
         m_password: "",
         m_filepath: "D://",
         s_ip: '',
         s_port: "1433",
-        s_dataname: "",
+        s_schema: "",
         s_username: "",
         s_password: "",
         s_filepath: "D://",
@@ -63,7 +63,7 @@ var vue = new Vue({
         generateWord(dialect, exportFileType) {
             let ip;
             let port;
-            let dataname;
+            let schema;
             let username;
             let password;
             if (exportFileType == undefined || exportFileType == '') {
@@ -74,21 +74,21 @@ var vue = new Vue({
                 this.oraclePopoverVisible = false;
                 ip = this.o_ip;
                 port = this.o_port;
-                dataname = this.o_dataname;
+                schema = this.o_schema;
                 username = this.o_username;
                 password = this.o_password;
             } else if (dialect == 'mysql') {
                 this.mysqlPopoverVisible = false;
                 ip = this.m_ip;
                 port = this.m_port;
-                dataname = this.m_dataname;
+                schema = this.m_schema;
                 username = this.m_username;
                 password = this.m_password;
             } else if (dialect == 'sqlserver') {
                 this.sqlserverPopoverVisible = false;
                 ip = this.s_ip;
                 port = this.s_port;
-                dataname = this.s_dataname;
+                schema = this.s_schema;
                 username = this.s_username;
                 password = this.s_password;
             }
@@ -101,7 +101,7 @@ var vue = new Vue({
                 this.$message.error('端口不能为空');
                 return;
             }
-            if (dataname == '') {
+            if (schema == '') {
                 this.$message.error('实例/数据库名称不能为空');
                 return;
             }
@@ -113,10 +113,12 @@ var vue = new Vue({
                 this.$message.error('密码不能为空');
                 return;
             }
-            if (exportFileType == 'excel') {
-                window.open("/dbExport/makeExcel?dbKind=" + dialect + "&ip=" + ip + "&port=" + port + "&dbName=" + dataname + "&userName=" + username + "&password=" + password + "&exportFileType=" + exportFileType);
+            if (exportFileType == 'markdown') {
+                window.open("/export/dictionary.md?dialect=" + dialect + "&host=" + ip + "&port=" + port + "&schema=" + schema + "&user=" + username + "&password=" + password + "&exportFileType=" + exportFileType);
+            } else if (exportFileType == 'excel') {
+                window.open("/dbExport/makeExcel?dialect=" + dialect + "&host=" + ip + "&port=" + port + "&schema=" + schema + "&user=" + username + "&password=" + password + "&exportFileType=" + exportFileType);
             } else if (exportFileType == 'word') {
-                window.open("/dbExport/makeWord?dbKind=" + dialect + "&ip=" + ip + "&port=" + port + "&dbName=" + dataname + "&userName=" + username + "&password=" + password + "&exportFileType=" + exportFileType);
+                window.open("/dbExport/makeWord?dialect=" + dialect + "&host=" + ip + "&port=" + port + "&schema=" + schema + "&user=" + username + "&password=" + password + "&exportFileType=" + exportFileType);
             }
 
         },
@@ -186,13 +188,13 @@ var vue = new Vue({
         generateDocHtml(dialect) {
             let ip;
             let port;
-            let dataname;
+            let schema;
             let username;
             let password;
             if (dialect == 'oracle') {
                 ip = this.o_ip;
                 port = this.o_port;
-                dataname = this.o_dataname;
+                schema = this.o_schema;
                 username = this.o_username;
                 password = this.o_password;
                 //filepath = this.o_filepath;
@@ -200,13 +202,13 @@ var vue = new Vue({
                 console.log(this.m_ip);
                 ip = this.m_ip;
                 port = this.m_port;
-                dataname = this.m_dataname;
+                schema = this.m_schema;
                 username = this.m_username;
                 password = this.m_password;
             } else if (dialect == 'sqlserver') {
                 ip = this.s_ip;
                 port = this.s_port;
-                dataname = this.s_dataname;
+                schema = this.s_schema;
                 username = this.s_username;
                 password = this.s_password;
             }
@@ -219,7 +221,7 @@ var vue = new Vue({
                 this.$message.error('端口不能为空');
                 return;
             }
-            if (dataname == '') {
+            if (schema == '') {
                 this.$message.error('实例/数据库名称不能为空');
                 return;
             }
@@ -231,7 +233,7 @@ var vue = new Vue({
                 this.$message.error('密码不能为空');
                 return;
             }
-            window.open("/view/dictionary.html?dialect=" + dialect + "&host=" + ip + "&port=" + port + "&schema=" + dataname + "&user=" + username + "&password=" + password);
+            window.open("/view/dictionary.html?dialect=" + dialect + "&host=" + ip + "&port=" + port + "&schema=" + schema + "&user=" + username + "&password=" + password);
         }
     }
 });

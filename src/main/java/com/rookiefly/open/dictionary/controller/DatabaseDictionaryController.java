@@ -51,8 +51,10 @@ public class DatabaseDictionaryController {
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=dictionary.md");
         DefaultDataSource dataSource = new DefaultDataSource(
-                Dialect.valueOf(dataSourceParam.getDialect()),
-                dataSourceParam.getUrl(),
+                Dialect.valueOf(dataSourceParam.getDialect().toUpperCase()),
+                dataSourceParam.getHost(),
+                dataSourceParam.getPort(),
+                dataSourceParam.getSchema(),
                 dataSourceParam.getUser(),
                 dataSourceParam.getPassword()
         );
