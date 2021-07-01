@@ -346,6 +346,7 @@ public class DatabaseIntrospector {
             column.setScale(rs.getInt(MetadataConstants.DECIMAL_DIGITS));
             column.setRemarks(rs.getString(MetadataConstants.REMARKS));
             column.setDefaultValue(rs.getString(MetadataConstants.COLUMN_DEF));
+            column.setAutoincrement(rs.getString(MetadataConstants.IS_AUTOINCREMENT));
 
             IntrospectedTable table = new IntrospectedTable(
                     rs.getString(MetadataConstants.TABLE_CAT),

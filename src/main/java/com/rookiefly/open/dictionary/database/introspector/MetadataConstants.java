@@ -17,4 +17,5 @@ public class MetadataConstants {
     public static final String TABLE_SCHEM = "TABLE_SCHEM";
     public static final String TABLE_NAME = "TABLE_NAME";
     public static final String KEY_SEQ = "KEY_SEQ";
+    public static final String IS_AUTOINCREMENT = "IS_AUTOINCREMENT";
 }

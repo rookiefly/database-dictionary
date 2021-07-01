@@ -31,6 +31,8 @@ public class IntrospectedColumn extends IntrospectedBase {
 
     protected String tableName;
 
+    protected String autoincrement;
+
     public IntrospectedColumn() {
         super();
     }
@@ -167,5 +169,13 @@ public class IntrospectedColumn extends IntrospectedBase {
 
     public void setPk(boolean pk) {
         this.pk = pk;
+    }
+
+    public String getAutoincrement() {
+        return autoincrement;
+    }
+
+    public void setAutoincrement(String autoincrement) {
+        this.autoincrement = autoincrement;
     }
 }
