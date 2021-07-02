@@ -6,8 +6,8 @@
 
 ![index.png][1]
 
-![dict.png][2]
+![html.png][2]
 
   [1]: index.png
-  [2]: snapshot.png
+  [2]: html.png
   

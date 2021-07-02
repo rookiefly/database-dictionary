@@ -114,11 +114,11 @@ var vue = new Vue({
                 return;
             }
             if (exportFileType == 'markdown') {
-                window.open("/export/dictionary.md?dialect=" + dialect + "&host=" + ip + "&port=" + port + "&schema=" + schema + "&user=" + username + "&password=" + password + "&exportFileType=" + exportFileType);
+                window.open("/export/markdown?dialect=" + dialect + "&host=" + ip + "&port=" + port + "&schema=" + schema + "&user=" + username + "&password=" + password + "&exportFileType=" + exportFileType);
             } else if (exportFileType == 'excel') {
-                window.open("/dbExport/makeExcel?dialect=" + dialect + "&host=" + ip + "&port=" + port + "&schema=" + schema + "&user=" + username + "&password=" + password + "&exportFileType=" + exportFileType);
+                window.open("/export/excel?dialect=" + dialect + "&host=" + ip + "&port=" + port + "&schema=" + schema + "&user=" + username + "&password=" + password + "&exportFileType=" + exportFileType);
             } else if (exportFileType == 'word') {
-                window.open("/dbExport/makeWord?dialect=" + dialect + "&host=" + ip + "&port=" + port + "&schema=" + schema + "&user=" + username + "&password=" + password + "&exportFileType=" + exportFileType);
+                window.open("/export/word?dialect=" + dialect + "&host=" + ip + "&port=" + port + "&schema=" + schema + "&user=" + username + "&password=" + password + "&exportFileType=" + exportFileType);
             }
 
         },

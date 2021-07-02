@@ -4,10 +4,10 @@
 <#list tables as table>
 ## ${table.name!} ${table.remarks!}
 
-|  字段名  |  数据类型  |  默认值  |  允许非空 |  自增 |  主键  |  备注  |
+|  字段名  |  数据类型  |  默认值  |  允许非空  |  主键  |  自增  |  备注  |
 | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
 <#list table.baseColumns as column>
-|  ${column.name!}  |  ${column.type!}  |  ${column.defaultValue!}  |  ${column.nullable?string('yes', 'no')} |  ${column.autoincrement} |  ${column.pk?string('yes', 'no')}  |  ${((column.remarks)?length>0)?string((column.remarks),"-")}  |
+|  ${column.name!}  |  ${column.type!}  |  ${column.defaultValue!}  |  ${column.nullable?string('YES', 'NO')} |  ${column.pk?string('YES', 'NO')} |  ${column.autoincrement}  |  ${((column.remarks)?length>0)?string((column.remarks),"-")}  |
 </#list>
 
 </#list>
