@@ -59,7 +59,8 @@ public class DatabaseConnectionController {
                 if (connection != null) {
                     connection.close();
                 }
-            } catch (SQLException ignored) {
+            } catch (SQLException e) {
+                log.error("connection close exception", e);
             }
         }
     }

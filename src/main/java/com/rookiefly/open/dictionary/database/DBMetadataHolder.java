@@ -4,6 +4,9 @@ import com.rookiefly.open.dictionary.database.introspector.DatabaseIntrospector;
 import com.rookiefly.open.dictionary.database.introspector.OracleIntrospector;
 import com.rookiefly.open.dictionary.database.introspector.PGIntrospector;
 import com.rookiefly.open.dictionary.database.introspector.SqlServerIntrospector;
+import com.rookiefly.open.dictionary.exception.BizErrorCodeEnum;
+import com.rookiefly.open.dictionary.exception.BizException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.sql.Connection;
@@ -16,6 +19,7 @@ import java.util.List;
 /**
  * 数据库操作
  */
+@Slf4j
 public class DBMetadataHolder {
 
     private enum LetterCase {
@@ -44,7 +48,7 @@ public class DBMetadataHolder {
 
     public DBMetadataHolder(DefaultDataSource dataSource, boolean forceBigDecimals, boolean useCamelCase) {
         if (dataSource == null) {
-            throw new NullPointerException("Argument dataSource can't be null!");
+            throw new BizException(BizErrorCodeEnum.REQUEST_ERROR, "Argument dataSource can't be null!");
         }
         this.dataSource = dataSource;
         this.dialect = dataSource.getDialect();
@@ -55,13 +59,13 @@ public class DBMetadataHolder {
             this.schemas = introspector.getSchemas();
             closeConnection();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            log.error("new DBMetadataHolder exception", e);
         }
     }
 
     private void initLetterCase() {
         try {
-            DatabaseMetaData databaseMetaData = getConnection().getMetaData();
+            databaseMetaData = getConnection().getMetaData();
             if (databaseMetaData.storesLowerCaseIdentifiers()) {
                 letterCase = LetterCase.LOWER;
             } else if (databaseMetaData.storesUpperCaseIdentifiers()) {
@@ -70,7 +74,7 @@ public class DBMetadataHolder {
                 letterCase = LetterCase.NORMAL;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            log.error("", e);
         }
     }
 
@@ -131,10 +135,13 @@ public class DBMetadataHolder {
         return schemas;
     }
 
-    public List<IntrospectedTable> introspectTables(DatabaseConfig config) throws SQLException {
-        getConnection();
+    public List<IntrospectedTable> introspectTables(DatabaseConfig config) {
         try {
+            getConnection();
             return introspector.introspectTables(config);
+        } catch (SQLException e) {
+            log.error("introspectTables exception", e);
+            return Collections.emptyList();
         } finally {
             closeConnection();
         }
@@ -159,6 +166,7 @@ public class DBMetadataHolder {
                 connection = null;
                 databaseMetaData = null;
             } catch (SQLException e) {
+                log.error("closeConnection exception", e);
             }
         }
     }
@@ -192,20 +200,19 @@ public class DBMetadataHolder {
      * 获取默认的Config,任何情况下都会返回一个
      *
      * @return
-     * @throws SQLException
      */
-    public DatabaseConfig getDefaultConfig() throws SQLException {
+    public DatabaseConfig getDefaultConfig() {
         DatabaseConfig config = null;
         if (catalogs.size() == 1) {
             if (schemas.size() == 1) {
                 config = new DatabaseConfig(catalogs.get(0), schemas.get(0));
-            } else if (schemas.size() == 0) {
+            } else if (schemas.isEmpty()) {
                 config = new DatabaseConfig(catalogs.get(0), null);
             }
-        } else if (catalogs.size() == 0) {
+        } else if (catalogs.isEmpty()) {
             if (schemas.size() == 1) {
                 config = new DatabaseConfig(null, schemas.get(0));
-            } else if (schemas.size() == 0) {
+            } else if (schemas.isEmpty()) {
                 config = new DatabaseConfig(null, null);
             }
         }
@@ -217,7 +224,7 @@ public class DBMetadataHolder {
                     config = new DatabaseConfig(null, dataSource.getUser());
                     break;
                 case MYSQL:
-                    if (schemas.size() > 0) {
+                    if (!schemas.isEmpty()) {
                         break;
                     }
                     if (dbName != null) {
@@ -284,9 +291,9 @@ public class DBMetadataHolder {
      * @return
      */
     private String getDbNameByUrl(String url) {
-        if (url.indexOf('/') > 0) {
+        if (url.indexOf('/') > -1) {
             String dbName = url.substring(url.lastIndexOf('/') + 1);
-            if (dbName.indexOf('?') > 0) {
+            if (dbName.indexOf('?') > -1) {
                 dbName = dbName.substring(0, dbName.indexOf('?'));
             }
             return dbName;

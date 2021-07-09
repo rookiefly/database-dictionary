@@ -1,11 +1,13 @@
 package com.rookiefly.open.dictionary.database;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@Data
 public class IntrospectedTable extends IntrospectedBase {
 
     private String schema;
@@ -82,7 +84,7 @@ public class IntrospectedTable extends IntrospectedBase {
     }
 
     public boolean hasPrimaryKeyColumns() {
-        return primaryKeyColumns.size() > 0;
+        return !primaryKeyColumns.isEmpty();
     }
 
     public List<IntrospectedColumn> getBaseColumns() {
@@ -94,11 +96,11 @@ public class IntrospectedTable extends IntrospectedBase {
     }
 
     public boolean hasBaseColumns() {
-        return baseColumns.size() > 0;
+        return !baseColumns.isEmpty();
     }
 
     public boolean hasAnyColumns() {
-        return baseColumns.size() > 0;
+        return !baseColumns.isEmpty();
     }
 
     public void addColumn(IntrospectedColumn introspectedColumn) {
@@ -116,53 +118,5 @@ public class IntrospectedTable extends IntrospectedBase {
                 break;
             }
         }
-    }
-
-    public String getSchema() {
-        return schema;
-    }
-
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
-
-    public String getCatalog() {
-        return catalog;
-    }
-
-    public void setCatalog(String catalog) {
-        this.catalog = catalog;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof IntrospectedTable)) {
-            return false;
-        }
-
-        IntrospectedTable that = (IntrospectedTable) o;
-
-        if (catalog != null ? !catalog.equals(that.catalog) : that.catalog != null) {
-            return false;
-        }
-        if (name != null ? !name.equals(that.name) : that.name != null) {
-            return false;
-        }
-        if (schema != null ? !schema.equals(that.schema) : that.schema != null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (schema != null ? schema.hashCode() : 0);
-        result = 31 * result + (catalog != null ? catalog.hashCode() : 0);
-        return result;
     }
 }

@@ -1,10 +1,10 @@
 package com.rookiefly.open.dictionary.database;
 
-import lombok.ToString;
+import lombok.Data;
 
 import java.sql.Types;
 
-@ToString
+@Data
 public class IntrospectedColumn extends IntrospectedBase {
 
     protected int jdbcType;
@@ -37,38 +37,6 @@ public class IntrospectedColumn extends IntrospectedBase {
         super();
     }
 
-    public int getJdbcType() {
-        return jdbcType;
-    }
-
-    public void setJdbcType(int jdbcType) {
-        this.jdbcType = jdbcType;
-    }
-
-    public int getLength() {
-        return length;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
-    }
-
-    public boolean isNullable() {
-        return nullable;
-    }
-
-    public void setNullable(boolean nullable) {
-        this.nullable = nullable;
-    }
-
-    public int getScale() {
-        return scale;
-    }
-
-    public void setScale(int scale) {
-        this.scale = scale;
-    }
-
     public boolean isBLOBColumn() {
         String typeName = getJdbcTypeName();
 
@@ -88,14 +56,6 @@ public class IntrospectedColumn extends IntrospectedBase {
                 || jdbcType == Types.LONGVARCHAR || jdbcType == Types.VARCHAR
                 || jdbcType == Types.LONGNVARCHAR || jdbcType == Types.NCHAR
                 || jdbcType == Types.NCLOB || jdbcType == Types.NVARCHAR;
-    }
-
-    public String getJavaProperty() {
-        return javaProperty;
-    }
-
-    public void setJavaProperty(String javaProperty) {
-        this.javaProperty = javaProperty;
     }
 
     public boolean isJDBCDateColumn() {
@@ -122,60 +82,6 @@ public class IntrospectedColumn extends IntrospectedBase {
         if (jdbcTypeName == null) {
             return "OTHER";
         }
-
         return jdbcTypeName;
-    }
-
-    public void setJdbcTypeName(String jdbcTypeName) {
-        this.jdbcTypeName = jdbcTypeName;
-    }
-
-    public FullyQualifiedJavaType getFullyQualifiedJavaType() {
-        return fullyQualifiedJavaType;
-    }
-
-    public void setFullyQualifiedJavaType(
-            FullyQualifiedJavaType fullyQualifiedJavaType) {
-        this.fullyQualifiedJavaType = fullyQualifiedJavaType;
-    }
-
-    public String getDefaultValue() {
-        return defaultValue;
-    }
-
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
-    public boolean isPk() {
-        return pk;
-    }
-
-    public void setPk(boolean pk) {
-        this.pk = pk;
-    }
-
-    public String getAutoincrement() {
-        return autoincrement;
-    }
-
-    public void setAutoincrement(String autoincrement) {
-        this.autoincrement = autoincrement;
     }
 }

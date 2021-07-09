@@ -2,6 +2,7 @@ package com.rookiefly.open.dictionary.database.introspector;
 
 import com.rookiefly.open.dictionary.database.DBMetadataHolder;
 import com.rookiefly.open.dictionary.database.DatabaseConfig;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,6 +10,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class PGIntrospector extends DatabaseIntrospector {
 
     public PGIntrospector(DBMetadataHolder dbMetadataHolder) {
@@ -24,20 +26,29 @@ public class PGIntrospector extends DatabaseIntrospector {
      *
      * @param config
      * @return
-     * @throws SQLException
      */
     @Override
-    protected Map<String, String> getTableComments(DatabaseConfig config) throws SQLException {
+    protected Map<String, String> getTableComments(DatabaseConfig config) {
+        PreparedStatement preparedStatement = null;
         Map<String, String> answer = new HashMap<>();
         try {
-            PreparedStatement preparedStatement = dbMetadataHolder.getConnection().prepareStatement("select tname,comments from(select relname as TNAME ,col_description(c.oid, 0) as COMMENTS from pg_class c where  relkind = 'r' and relname not like 'pg_%' and relname not like 'sql_%') as temp where comments is not null ");
+            preparedStatement = dbMetadataHolder.getConnection().prepareStatement("" +
+                    "select tname,comments from(select relname as TNAME ,col_description(c.oid, 0) as COMMENTS from pg_class c where  relkind = 'r' and relname not like 'pg_%' and relname not like 'sql_%') as temp where comments is not null ");
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
                 answer.put(rs.getString(dbMetadataHolder.convertLetterByCase("tname")), rs.getString(dbMetadataHolder.convertLetterByCase("comments")));
             }
             closeResultSet(rs);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            log.error("getTableComments exception", e);
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                log.error("preparedStatement close exception", e);
+            }
         }
         return answer;
     }
@@ -47,15 +58,14 @@ public class PGIntrospector extends DatabaseIntrospector {
      *
      * @param config
      * @return
-     * @throws SQLException
      */
     @Override
-    protected Map<String, Map<String, String>> getColumnComments(DatabaseConfig config) throws SQLException {
+    protected Map<String, Map<String, String>> getColumnComments(DatabaseConfig config) {
+        PreparedStatement preparedStatement = null;
         Map<String, Map<String, String>> answer = new HashMap<>();
         try {
-            StringBuilder sqlBuilder = new StringBuilder("select tname,cname,comments from( ");
-            sqlBuilder.append("SELECT col_description(a.attrelid,a.attnum) as comments,a.attname as cname,c.relname as tname FROM pg_class as c,pg_attribute as a where a.attrelid = c.oid and a.attnum>0 and c.relname not like 'pg_%' and c.relname not like 'sql_%') as temp where comments is not null ");
-            PreparedStatement preparedStatement = dbMetadataHolder.getConnection().prepareStatement(sqlBuilder.toString());
+            preparedStatement = dbMetadataHolder.getConnection().prepareStatement("" +
+                    "select tname,cname,comments from(SELECT col_description(a.attrelid,a.attnum) as comments,a.attname as cname,c.relname as tname FROM pg_class as c,pg_attribute as a where a.attrelid = c.oid and a.attnum>0 and c.relname not like 'pg_%' and c.relname not like 'sql_%') as temp where comments is not null ");
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
                 String tname = rs.getString(dbMetadataHolder.convertLetterByCase("tname"));
@@ -65,8 +75,16 @@ public class PGIntrospector extends DatabaseIntrospector {
                 answer.get(tname).put(rs.getString(dbMetadataHolder.convertLetterByCase("cname")), rs.getString(dbMetadataHolder.convertLetterByCase("comments")));
             }
             closeResultSet(rs);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            log.error("getColumnComments exception", e);
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                log.error("preparedStatement close exception", e);
+            }
         }
         return answer;
     }

@@ -17,8 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,13 +38,18 @@ public class DatabaseDictionaryController {
     @Resource
     private Configuration cfg;
 
+    @GetMapping("/index.html")
+    public String index() {
+        return "index";
+    }
+
     /**
      * 下载md字典文件
      *
      * @param dataSourceParam
      */
     @GetMapping("/export/markdown")
-    public void exportDictionaryMarkdown(@Validated DataSourceParam dataSourceParam, HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, TemplateException {
+    public void exportDictionaryMarkdown(@Validated DataSourceParam dataSourceParam, HttpServletRequest request, HttpServletResponse response) throws IOException, TemplateException {
         response.setCharacterEncoding(request.getCharacterEncoding());
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=dictionary.md");
@@ -63,7 +65,7 @@ public class DatabaseDictionaryController {
         DBMetadataHolder dbMetadataHolder = new DBMetadataHolder(dataSource);
         DatabaseConfig databaseConfig = dbMetadataHolder.getDefaultConfig();
         List<IntrospectedTable> introspectedTableList = dbMetadataHolder.introspectTables(databaseConfig);
-        Map root = new HashMap();
+        Map<String, Object> root = new HashMap<>();
         root.put("tables", introspectedTableList);
         root.put("schema", databaseConfig.getCatalog());
         Template temp = cfg.getTemplate("md.html");
@@ -79,7 +81,7 @@ public class DatabaseDictionaryController {
      * @return
      */
     @GetMapping("/view/dictionary.html")
-    public String viewDictionaryHtml(@Validated DataSourceParam dataSourceParam, ModelMap modelMap) throws SQLException {
+    public String viewDictionaryHtml(@Validated DataSourceParam dataSourceParam, ModelMap modelMap) {
         DefaultDataSource dataSource = new DefaultDataSource(
                 Dialect.valueOf(dataSourceParam.getDialect().toUpperCase()),
                 dataSourceParam.getHost(),
@@ -103,8 +105,7 @@ public class DatabaseDictionaryController {
      * @return
      */
     @PostMapping("/data/dictionary.json")
-    @ResponseBody
-    public CommonResponse dictionaryJson(@RequestBody @Validated DataSourceParam dataSourceParam) throws SQLException {
+    public CommonResponse dictionaryJson(@RequestBody @Validated DataSourceParam dataSourceParam) {
         DefaultDataSource dataSource = new DefaultDataSource(
                 Dialect.valueOf(dataSourceParam.getDialect()),
                 dataSourceParam.getUrl(),
@@ -117,14 +118,12 @@ public class DatabaseDictionaryController {
         return CommonResponse.newSuccessResponse(introspectedTableList);
     }
 
-    @RequestMapping(value = "/export/word")
-    @ResponseBody
+    @GetMapping(value = "/export/word")
     public void exportDictionaryWord(@Validated DataSourceParam dataSourceParam, HttpServletRequest request, HttpServletResponse response) {
 
     }
 
-    @RequestMapping(value = "/export/excel")
-    @ResponseBody
+    @GetMapping(value = "/export/excel")
     public void exportDictionaryExcel(@Validated DataSourceParam dataSourceParam, HttpServletRequest request, HttpServletResponse response) {
 
     }

@@ -6,6 +6,7 @@ import com.rookiefly.open.dictionary.database.FullyQualifiedJavaType;
 import com.rookiefly.open.dictionary.database.IntrospectedColumn;
 import com.rookiefly.open.dictionary.database.IntrospectedTable;
 import com.rookiefly.open.dictionary.utils.JavaBeansUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.sql.DatabaseMetaData;
@@ -21,9 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+@Slf4j
 public class DatabaseIntrospector {
 
     protected static final Map<Integer, JdbcTypeInformation> typeMap;
+
+    public static final String JAVA_BYTE_ARRAY_TYPE = "byte[]";
 
     static {
         typeMap = new HashMap<>();
@@ -33,11 +37,11 @@ public class DatabaseIntrospector {
         typeMap.put(Types.BIGINT, new JdbcTypeInformation(JDBCType.BIGINT.getName(),
                 new FullyQualifiedJavaType(Long.class.getName())));
         typeMap.put(Types.BINARY, new JdbcTypeInformation(JDBCType.BINARY.getName(),
-                new FullyQualifiedJavaType("byte[]")));
+                new FullyQualifiedJavaType(JAVA_BYTE_ARRAY_TYPE)));
         typeMap.put(Types.BIT, new JdbcTypeInformation(JDBCType.BIT.getName(),
                 new FullyQualifiedJavaType(Boolean.class.getName())));
         typeMap.put(Types.BLOB, new JdbcTypeInformation(JDBCType.BLOB.getName(),
-                new FullyQualifiedJavaType("byte[]")));
+                new FullyQualifiedJavaType(JAVA_BYTE_ARRAY_TYPE)));
         typeMap.put(Types.BOOLEAN, new JdbcTypeInformation(JDBCType.BOOLEAN.getName(),
                 new FullyQualifiedJavaType(Boolean.class.getName())));
         typeMap.put(Types.CHAR, new JdbcTypeInformation(JDBCType.CHAR.getName(),
@@ -62,7 +66,7 @@ public class DatabaseIntrospector {
                 new FullyQualifiedJavaType(String.class.getName())));
         typeMap.put(Types.LONGVARBINARY, new JdbcTypeInformation(
                 JDBCType.LONGVARBINARY.getName(),
-                new FullyQualifiedJavaType("byte[]")));
+                new FullyQualifiedJavaType(JAVA_BYTE_ARRAY_TYPE)));
         typeMap.put(Types.LONGVARCHAR, new JdbcTypeInformation(JDBCType.LONGVARCHAR.getName(),
                 new FullyQualifiedJavaType(String.class.getName())));
         typeMap.put(Types.NCHAR, new JdbcTypeInformation(JDBCType.NCHAR.getName(),
@@ -90,7 +94,7 @@ public class DatabaseIntrospector {
         typeMap.put(Types.TINYINT, new JdbcTypeInformation(JDBCType.TINYINT.getName(),
                 new FullyQualifiedJavaType(Byte.class.getName())));
         typeMap.put(Types.VARBINARY, new JdbcTypeInformation(JDBCType.VARBINARY.getName(),
-                new FullyQualifiedJavaType("byte[]")));
+                new FullyQualifiedJavaType(JAVA_BYTE_ARRAY_TYPE)));
         typeMap.put(Types.VARCHAR, new JdbcTypeInformation(JDBCType.VARCHAR.getName(),
                 new FullyQualifiedJavaType(String.class.getName())));
     }
@@ -229,6 +233,7 @@ public class DatabaseIntrospector {
                 introspectedTable.addPrimaryKeyColumn(columnName);
             }
         } catch (SQLException e) {
+            log.error("calculatePrimaryKey exception", e);
         } finally {
             closeResultSet(rs);
         }
@@ -244,6 +249,7 @@ public class DatabaseIntrospector {
             try {
                 rs.close();
             } catch (SQLException e) {
+                log.error("closeResultSet exception", e);
             }
         }
     }
@@ -382,7 +388,6 @@ public class DatabaseIntrospector {
             DatabaseConfig config,
             Map<IntrospectedTable, List<IntrospectedColumn>> columns) throws SQLException {
         List<IntrospectedTable> answer = new ArrayList<>();
-        //获取表注释信息
         Map<String, String> tableCommentsMap = getTableComments(config);
         Map<String, Map<String, String>> tableColumnCommentsMap = getColumnComments(config);
         for (Map.Entry<IntrospectedTable, List<IntrospectedColumn>> entry : columns
@@ -407,7 +412,6 @@ public class DatabaseIntrospector {
                 } else {
                     introspectedColumn.setJavaProperty(JavaBeansUtil.getValidPropertyName(introspectedColumn.getName()));
                 }
-                //处理注释
                 if (columnCommentsMap != null && columnCommentsMap.containsKey(introspectedColumn.getName())) {
                     introspectedColumn.setRemarks(columnCommentsMap.get(introspectedColumn.getName()));
                 }
@@ -441,10 +445,9 @@ public class DatabaseIntrospector {
      *
      * @param config
      * @return
-     * @throws SQLException
      */
-    protected Map<String, Map<String, String>> getColumnComments(DatabaseConfig config) throws SQLException {
-        return null;
+    protected Map<String, Map<String, String>> getColumnComments(DatabaseConfig config) {
+        return new HashMap<>();
     }
 
     public static class JdbcTypeInformation {

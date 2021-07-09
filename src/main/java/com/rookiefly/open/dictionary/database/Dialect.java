@@ -19,7 +19,7 @@ public enum Dialect {
     /**
      * MYSQL
      */
-    MYSQL("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/sample", "jdbc:mysql://${host}:${port}/${schema}?serverTimezone=UTC"),
+    MYSQL("com.mysql.cj.jdbc.Driver", "jdbc:mysql://localhost:3306/sample", "jdbc:mysql://${host}:${port}/${schema}?serverTimezone=UTC"),
     /**
      * ORACLE
      */

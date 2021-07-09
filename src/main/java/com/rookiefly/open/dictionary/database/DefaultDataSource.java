@@ -1,5 +1,6 @@
 package com.rookiefly.open.dictionary.database;
 
+import com.rookiefly.open.dictionary.exception.BizException;
 import org.apache.commons.text.StringSubstitutor;
 
 import javax.sql.DataSource;
@@ -7,7 +8,6 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -17,10 +17,17 @@ import java.util.logging.Logger;
  * 数据源
  */
 public final class DefaultDataSource implements DataSource {
+
+    public static final String JDBC_DRIVER_CLASS_NOT_FOUND = "找不到指定的数据库驱动:";
+
     private Dialect dialect;
+
     private String url;
+
     private String user;
+
     private String password;
+
     private DataSource delegate;
 
     public DefaultDataSource(Dialect dialect, DataSource dataSource) {
@@ -29,7 +36,7 @@ public final class DefaultDataSource implements DataSource {
         try {
             Class.forName(dialect.getDriverClass());
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("找不到指定的数据库驱动:" + dialect.getDriverClass());
+            throw new BizException(JDBC_DRIVER_CLASS_NOT_FOUND + dialect.getDriverClass());
         }
     }
 
@@ -47,7 +54,7 @@ public final class DefaultDataSource implements DataSource {
         try {
             Class.forName(dialect.getDriverClass());
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("找不到指定的数据库驱动:" + dialect.getDriverClass());
+            throw new BizException(JDBC_DRIVER_CLASS_NOT_FOUND + dialect.getDriverClass());
         }
     }
 
@@ -60,7 +67,7 @@ public final class DefaultDataSource implements DataSource {
         try {
             Class.forName(dialect.getDriverClass());
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("找不到指定的数据库驱动:" + dialect.getDriverClass());
+            throw new BizException(JDBC_DRIVER_CLASS_NOT_FOUND + dialect.getDriverClass());
         }
     }
 
@@ -100,37 +107,37 @@ public final class DefaultDataSource implements DataSource {
     }
 
     @Override
-    public PrintWriter getLogWriter() throws SQLException {
-        return null;
+    public PrintWriter getLogWriter() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setLogWriter(PrintWriter out) throws SQLException {
-
+    public void setLogWriter(PrintWriter out) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setLoginTimeout(int seconds) throws SQLException {
-
+    public void setLoginTimeout(int seconds) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public int getLoginTimeout() throws SQLException {
-        return 0;
+    public int getLoginTimeout() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return null;
+    public Logger getParentLogger() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public <T> T unwrap(Class<T> iface) throws SQLException {
-        return null;
+    public <T> T unwrap(Class<T> iface) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return false;
+    public boolean isWrapperFor(Class<?> iface) {
+        throw new UnsupportedOperationException();
     }
 }

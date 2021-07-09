@@ -56,7 +56,7 @@ public class DatabaseConnectionServiceImpl implements DatabaseConnectionService 
         databaseConnectionHistoryBO.setDialect(Dialect.valueOf(databaseConnectionHistoryDO.getDialect()));
         databaseConnectionHistoryBO.setUrl(databaseConnectionHistoryDO.getUrl());
         databaseConnectionHistoryBO.setUser(databaseConnectionHistoryDO.getUser());
-        databaseConnectionHistoryBO.setEncryptPassword(databaseConnectionHistoryDO.getPassword());
+        databaseConnectionHistoryBO.setPassword(databaseConnectionHistoryDO.getPassword());
         return databaseConnectionHistoryBO;
     }
 }

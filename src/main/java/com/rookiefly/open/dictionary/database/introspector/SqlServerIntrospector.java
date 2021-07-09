@@ -2,6 +2,7 @@ package com.rookiefly.open.dictionary.database.introspector;
 
 import com.rookiefly.open.dictionary.database.DBMetadataHolder;
 import com.rookiefly.open.dictionary.database.DatabaseConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.PreparedStatement;
@@ -10,6 +11,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class SqlServerIntrospector extends DatabaseIntrospector {
 
     public SqlServerIntrospector(DBMetadataHolder dbMetadataHolder) {
@@ -25,10 +27,10 @@ public class SqlServerIntrospector extends DatabaseIntrospector {
      *
      * @param config
      * @return
-     * @throws SQLException
      */
     @Override
-    protected Map<String, String> getTableComments(DatabaseConfig config) throws SQLException {
+    protected Map<String, String> getTableComments(DatabaseConfig config) {
+        PreparedStatement preparedStatement = null;
         Map<String, String> answer = new HashMap<>();
         try {
             StringBuilder sqlBuilder = new StringBuilder("select a.name tname, b.value comments ");
@@ -40,7 +42,7 @@ public class SqlServerIntrospector extends DatabaseIntrospector {
                 sqlBuilder.append(" where name like ?   ");
             }
             sqlBuilder.append(")  and b.value is not null ");
-            PreparedStatement preparedStatement = dbMetadataHolder.getConnection().prepareStatement(sqlBuilder.toString());
+            preparedStatement = dbMetadataHolder.getConnection().prepareStatement(sqlBuilder.toString());
             if (StringUtils.isNotEmpty(config.getSchemaPattern())) {
                 preparedStatement.setString(1, config.getSchemaPattern());
             }
@@ -49,8 +51,16 @@ public class SqlServerIntrospector extends DatabaseIntrospector {
                 answer.put(rs.getString(dbMetadataHolder.convertLetterByCase("tname")), rs.getString(dbMetadataHolder.convertLetterByCase("comments")));
             }
             closeResultSet(rs);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            log.error("getTableComments exception", e);
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                log.error("preparedStatement close exception", e);
+            }
         }
         return answer;
     }
@@ -60,10 +70,10 @@ public class SqlServerIntrospector extends DatabaseIntrospector {
      *
      * @param config
      * @return
-     * @throws SQLException
      */
     @Override
-    protected Map<String, Map<String, String>> getColumnComments(DatabaseConfig config) throws SQLException {
+    protected Map<String, Map<String, String>> getColumnComments(DatabaseConfig config) {
+        PreparedStatement preparedStatement = null;
         Map<String, Map<String, String>> answer = new HashMap<>();
         try {
             StringBuilder sqlBuilder = new StringBuilder("select a.name tname, b.name cname, c.value as comments    ");
@@ -77,7 +87,7 @@ public class SqlServerIntrospector extends DatabaseIntrospector {
             }
             sqlBuilder.append(")  and c.value is not null");
 
-            PreparedStatement preparedStatement = dbMetadataHolder.getConnection().prepareStatement(sqlBuilder.toString());
+            preparedStatement = dbMetadataHolder.getConnection().prepareStatement(sqlBuilder.toString());
             if (StringUtils.isNotEmpty(config.getSchemaPattern())) {
                 preparedStatement.setString(1, config.getSchemaPattern());
             }
@@ -90,8 +100,16 @@ public class SqlServerIntrospector extends DatabaseIntrospector {
                 answer.get(tname).put(rs.getString(dbMetadataHolder.convertLetterByCase("cname")), rs.getString(dbMetadataHolder.convertLetterByCase("comments")));
             }
             closeResultSet(rs);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            log.error("getColumnComments exception", e);
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                log.error("preparedStatement close exception", e);
+            }
         }
         return answer;
     }

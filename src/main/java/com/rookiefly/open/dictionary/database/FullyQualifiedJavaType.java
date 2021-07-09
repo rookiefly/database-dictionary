@@ -1,5 +1,7 @@
 package com.rookiefly.open.dictionary.database;
 
+import com.rookiefly.open.dictionary.exception.BizException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -144,7 +146,7 @@ public class FullyQualifiedJavaType implements
             sb.append(baseQualifiedName);
         }
 
-        if (typeArguments.size() > 0) {
+        if (!typeArguments.isEmpty()) {
             boolean first = true;
             sb.append('<');
             for (FullyQualifiedJavaType fqjt : typeArguments) {
@@ -207,7 +209,7 @@ public class FullyQualifiedJavaType implements
             sb.append(baseShortName);
         }
 
-        if (typeArguments.size() > 0) {
+        if (!typeArguments.isEmpty()) {
             boolean first = true;
             sb.append('<');
             for (FullyQualifiedJavaType fqjt : typeArguments) {
@@ -293,7 +295,7 @@ public class FullyQualifiedJavaType implements
                 simpleParse(fullTypeSpecification.substring(0, index));
                 int endIndex = fullTypeSpecification.lastIndexOf('>');
                 if (endIndex == -1) {
-                    throw new RuntimeException("Invalid Type Specification: " + fullTypeSpecification);
+                    throw new BizException("Invalid Type Specification: " + fullTypeSpecification);
                 }
                 genericParse(fullTypeSpecification.substring(index, endIndex + 1));
             }
@@ -359,7 +361,7 @@ public class FullyQualifiedJavaType implements
     private void genericParse(String genericSpecification) {
         int lastIndex = genericSpecification.lastIndexOf('>');
         if (lastIndex == -1) {
-            throw new RuntimeException("Invalid Type Specification: " + genericSpecification);
+            throw new BizException("Invalid Type Specification: " + genericSpecification);
         }
         String argumentString = genericSpecification.substring(1, lastIndex);
         // need to find "," outside of a <> bounds
@@ -388,7 +390,7 @@ public class FullyQualifiedJavaType implements
         }
 
         if (openCount != 0) {
-            throw new RuntimeException("Invalid Type Specification: " + genericSpecification);
+            throw new BizException("Invalid Type Specification: " + genericSpecification);
         }
 
         String finalType = sb.toString();
