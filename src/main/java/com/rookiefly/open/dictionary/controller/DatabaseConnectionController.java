@@ -8,6 +8,7 @@ import com.rookiefly.open.dictionary.exception.BizErrorCodeEnum;
 import com.rookiefly.open.dictionary.param.DataSourceParam;
 import com.rookiefly.open.dictionary.service.DatabaseConnectionService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -83,7 +84,7 @@ public class DatabaseConnectionController {
         databaseConnectionHistoryBO.setDialect(Dialect.valueOf(dialect));
         databaseConnectionHistoryBO.setUrl(url);
         databaseConnectionHistoryBO.setUser(user);
-        databaseConnectionHistoryBO.setPassword(dataSourceParam.getPassword());
+        databaseConnectionHistoryBO.setPassword(DigestUtils.sha256Hex(dataSourceParam.getPassword()));
         databaseConnectionHistoryBO.setAliasName(aliasName);
         return CommonResponse.newSuccessResponse(databaseConnectionService.saveDatabaseConnection(databaseConnectionHistoryBO));
     }
